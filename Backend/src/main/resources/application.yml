@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: taskManager
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/taskManager
+
+server:
+  port: 8083

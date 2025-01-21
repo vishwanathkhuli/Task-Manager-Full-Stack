@@ -1,0 +1,106 @@
+/* App.css */
+@import url('https://fonts.cdnfonts.com/css/euclid-circular-a');
+
+/* Main layout when user is logged in */
+.app-layout {
+  display: flex;
+  /* Flexbox for sidebar and main content */
+  min-height: 100vh;
+  /* Ensure the layout fills the viewport height */
+}
+
+.app-layout.with-sidebar .main-content {
+  margin-left: 250px;
+  /* Space for sidebar width */
+}
+
+.sidebar {
+  width: 250px;
+  /* Fixed sidebar width */
+  background-color: #f8f9fa;
+  /* Light gray background */
+  border-right: 1px solid #ddd;
+  /* Optional border for sidebar */
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.main-content {
+  flex: 1;
+  /* Take up the remaining space */
+  padding: 20px;
+  background-color: #ffffff;
+  /* White background for the main content */
+  overflow: auto;
+  /* Prevent content overflow */
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 50;
+}
+
+body {
+  padding-top: 70px;
+  /* Adjust based on the height of your navbar */
+}
+
+
+div {
+  font-family: "Euclid Circular A", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: larger;
+}
+
+input.form-control {
+  font-family: "Euclid Circular A", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  outline: none;
+  padding: 10px;
+}
+
+.special-font {
+  font-family: "MongoDB Value Serif", "Times New Roman", serif;
+  font-size: 1em;
+  color: rgb(0, 104, 74);
+}
+
+
+.navbar .btn {
+  background-color: orangered;
+  color: white;
+}
+
+.custom-btn {
+  border: none;
+  background-color: rgb(0, 104, 74);
+  border-radius: 10px;
+  width: 30%;
+  margin: auto;
+  color: white;
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+
+/* Homepage */
+
+.main {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 85vh;
+
+}
+
+.left-side {
+  float: left;
+  margin: auto;
+}
+
+.right-side {
+  margin: auto;
+}
+
+.task-card {}
