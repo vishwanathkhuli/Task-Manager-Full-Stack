@@ -1,7 +1,7 @@
 spring:
   application:
     name: Backend
-  profiles.active: "${ENV}:dev"
+  profiles.active: ${ENV:dev}
 
 server:
   port: 8080
