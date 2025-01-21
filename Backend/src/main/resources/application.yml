@@ -1,9 +1,7 @@
 spring:
   application:
-    name: taskManager
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/taskManager
+    name: Backend
+  profiles.active: "${ENV}:dev"
 
 server:
-  port: 8083
+  port: 8080

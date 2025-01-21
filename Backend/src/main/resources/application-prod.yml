@@ -1,0 +1,4 @@
+spring:
+ data:
+  mongodb:
+   uri: mongodb+srv://vishwanathkhuli347:Z2C6IN5xnm1yO28D@taskmanagerwithspirngbo.8zzxa.mongodb.net/test?retryWrites=true&w=majority
