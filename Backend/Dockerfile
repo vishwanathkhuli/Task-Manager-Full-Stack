@@ -23,7 +23,7 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 # Copy the packaged JAR file from the build stage
-COPY --from=build /app/target/task-manager-backend-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/taskManager-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the application port (adjust if your application runs on a different port)
 EXPOSE 8080
