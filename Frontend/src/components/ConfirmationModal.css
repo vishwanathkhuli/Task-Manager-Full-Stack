@@ -52,6 +52,7 @@
 .btn-secondary {
   background-color: #f0f0f0;
   border-color: #ddd;
+  color: green;
 }
 
 .btn-danger {

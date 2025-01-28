@@ -103,4 +103,6 @@ input.form-control {
   margin: auto;
 }
 
-.task-card {}
+.cursor-pointer {
+  cursor: pointer;
+}

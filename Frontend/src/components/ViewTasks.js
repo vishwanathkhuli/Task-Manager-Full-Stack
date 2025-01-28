@@ -47,6 +47,10 @@ export default function ViewTasks() {
     setTaskToDelete(null); // Clear the selected task
   };
 
+  const handleDetailedView = (task) => {
+    navigate(`/task-details/${task.id}`);
+  }
+
   const calculateProgress = (subtasks) => {
     if (!subtasks || subtasks.length === 0) return 0;
     const completedSubtasks = subtasks.filter(
@@ -94,7 +98,9 @@ export default function ViewTasks() {
                     <span key={i} className="circle"></span>
                   ))}
                 </div>
-                <button className="btn btn-outline-dark w-100 mb-3">
+                <button className="btn btn-outline-dark w-100 mb-3"
+                  onClick={() => handleDetailedView(task)}
+                >
                   <MdRemoveRedEye />
                   <span className="ms-2">Detailed View</span>
                 </button>

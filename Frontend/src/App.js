@@ -12,6 +12,7 @@ import UpdateTask from './components/UpdateTask';
 import Homepage from './pages/Homepage';
 import Profile from './components/Profile';
 import { useEffect } from 'react';
+import TaskDetails from './components/TaskDetails';
 
 function App() {
   const { user } = useSelector(selectUser);
@@ -41,6 +42,7 @@ function App() {
         <Route path="/task" element={user ? <Task /> : <Homapage />} />
         <Route path="/task/:id" element={<UpdateTask />} />
         <Route path='/profile' element={user ? <Profile /> : <Homepage />} />
+        <Route path='/task-details/:id' element={user ? <TaskDetails /> : <Homepage />} />
       </Routes>
     </div>
   );

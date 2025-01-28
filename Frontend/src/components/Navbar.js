@@ -1,9 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { selectUser, userActions } from "../redux/userReducer";
-import { FaSignOutAlt, FaTasks } from "react-icons/fa";  // Add Task Manager icon
+import { FaSignOutAlt, FaTasks } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
-import './Navbar.css'
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "./Navbar.css";
 
 export default function Navbar() {
   const { user } = useSelector(selectUser);
@@ -12,27 +14,50 @@ export default function Navbar() {
 
   // Generate the first letter of the user's first name
   const generateInitial = (firstName) => {
-    return `${firstName?.charAt(0) ?? ''}`.toUpperCase();
+    return `${firstName?.charAt(0) ?? ""}`.toUpperCase();
   };
 
   const handleLogout = () => {
     dispatch(userActions.logoutUser());
-    navigate('/signin');  // Redirect to login page after logout
+    navigate("/signin");
+    collapseNavbar();
   };
 
   const handleProfileClick = () => {
-    // Redirect to profile page or perform other actions
-    navigate('/profile');
+    navigate("/profile");
+    collapseNavbar();
+  };
+
+  const handleDashboardClick = () => {
+    navigate("/dashboard");
+    collapseNavbar();
+  };
+
+  const collapseNavbar = () => {
+    const navbarCollapse = document.getElementById("navbarNav");
+    if (navbarCollapse && navbarCollapse.classList.contains("show")) {
+      navbarCollapse.classList.remove("show");
+    }
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light fonts shadow-sm fixed-top" style={{ zIndex: 1050 }}>
+    <nav
+      className="navbar navbar-expand-lg navbar-light fonts shadow-sm fixed-top"
+      style={{ zIndex: 1050 }}
+    >
       <div className="container-fluid">
         {/* Navbar Brand */}
-        <a className="navbar-brand d-flex align-items-center" href="/" style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
-          <FaTasks className="me-2" style={{ color: "rgb(0, 104, 74)", fontSize: "1rem" }} />
+        <span
+          className="navbar-brand d-flex align-items-center cursor-pointer"
+          onClick={() => navigate('/')}
+          style={{ fontWeight: "bold", fontSize: "1.5rem" }}
+        >
+          <FaTasks
+            className="me-2"
+            style={{ color: "rgb(0, 104, 74)", fontSize: "1rem" }}
+          />
           <h3 className="text-center mb-1 special-font">Task Manager</h3>
-        </a>
+        </span>
         {/* Navbar Toggle Button */}
         <button
           className="navbar-toggler"
@@ -47,19 +72,23 @@ export default function Navbar() {
         </button>
         {/* Navbar Menu */}
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto align-items-center" style={{ display: "flex", alignItems: "center" }}>
+          <ul
+            className="navbar-nav ms-auto align-items-center"
+            style={{ display: "flex", alignItems: "center" }}
+          >
             {user ? (
               <>
-                {/* User Profile as Button */}
+                {/* Dashboard Button */}
                 <li>
                   <button
                     className="btn btn-outline-primary bg-primary me-2 p-2 fs-6"
-                    onClick={() => navigate('/dashboard')}
+                    onClick={handleDashboardClick}
                     style={{ fontSize: "1rem" }}
                   >
                     <MdDashboard className="me-2" /> Dashboard
                   </button>
                 </li>
+                {/* User Profile */}
                 <li className="nav-item">
                   <button
                     className="btn btn-outline-success bg-success me-2 p-2 fs-6"
@@ -88,7 +117,9 @@ export default function Navbar() {
                       generateInitial(user.firstName)
                     )}
                   </button>
-                  {user.profileImage && <span className="ms-2 text-dark fs-5">{user.firstName}</span>}
+                  {user.profileImage && (
+                    <span className="ms-2 text-dark fs-5">{user.firstName}</span>
+                  )}
                 </li>
                 {/* Logout Button */}
                 <li className="nav-item">
@@ -107,7 +138,10 @@ export default function Navbar() {
                 <li className="nav-item">
                   <button
                     className="btn btn-outline-success bg-success me-2 p-2 fs-6"
-                    onClick={() => navigate("/signup")}
+                    onClick={() => {
+                      navigate("/signup");
+                      collapseNavbar();
+                    }}
                   >
                     Register
                   </button>
@@ -116,7 +150,10 @@ export default function Navbar() {
                 <li className="nav-item">
                   <button
                     className="btn btn-outline-success bg-success me-2 p-2 fs-6"
-                    onClick={() => navigate("/signin")}
+                    onClick={() => {
+                      navigate("/signin");
+                      collapseNavbar();
+                    }}
                   >
                     Login
                   </button>
