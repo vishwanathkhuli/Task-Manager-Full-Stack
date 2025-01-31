@@ -14,7 +14,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtAuthenticationHelper {
 
-    private final String secret = "vishwanathkkhuli19012001mangalwadhaliyalkarnatakaisaverysecureandlongkey"; // Secret key
+    private final String secret = "vishwanathkkhuli19012001mangalwadramapurhaliyalbengaluruasdfasdfasdfasdfsdfasdfasd"; // Secret key
     
     private static final long JWT_TOKEN_VALIDITY = 7 * 24 * 60 * 60; // 7 days in seconds
     
