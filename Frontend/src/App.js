@@ -1,18 +1,20 @@
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
-import Homapage from './pages/Homepage';
-import Register from './components/Register';
-import Login from './components/Login';
-import Navbar from './components/Navbar';
-import Task from './components/Task';
-import Dashboard from './pages/Dashboard';
 import { useSelector } from 'react-redux';
 import { selectUser } from './redux/userReducer';
-import UpdateTask from './components/UpdateTask';
-import Profile from './components/Profile';
-import { useEffect } from 'react';
-import TaskDetails from './components/TaskDetails';
+import { useEffect, Suspense, lazy } from 'react';
+import Navbar from './components/Navbar';
 import NotificationModel from './components/NotificationModel';
+
+// Lazy imports
+const Homepage = lazy(() => import('./pages/Homepage'));
+const Register = lazy(() => import('./components/Register'));
+const Login = lazy(() => import('./components/Login'));
+const Task = lazy(() => import('./components/Task'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const UpdateTask = lazy(() => import('./components/UpdateTask'));
+const Profile = lazy(() => import('./components/Profile'));
+const TaskDetails = lazy(() => import('./components/TaskDetails'));
 
 function App() {
   const { user } = useSelector(selectUser);
@@ -25,16 +27,18 @@ function App() {
     <div className="App">
       <Navbar />
       <NotificationModel />
-      <Routes>
-        <Route path="/" element={<Homapage />} />
-        <Route path="/dashboard" element={user ? <Dashboard /> : <Register />} />
-        <Route path="/signup" element={<Register />} />
-        <Route path="/signin" element={<Login />} />
-        <Route path="/task" element={user ? <Task /> : <Homapage />} />
-        <Route path="/task/:id" element={<UpdateTask />} />
-        <Route path='/profile' element={user ? <Profile /> : <Homapage />} />
-        <Route path='/task-details/:id' element={user ? <TaskDetails /> : <Homapage />} />
-      </Routes>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/dashboard" element={user ? <Dashboard /> : <Register />} />
+          <Route path="/signup" element={<Register />} />
+          <Route path="/signin" element={<Login />} />
+          <Route path="/task" element={user ? <Task /> : <Homepage />} />
+          <Route path="/task/:id" element={<UpdateTask />} />
+          <Route path='/profile' element={user ? <Profile /> : <Homepage />} />
+          <Route path='/task-details/:id' element={user ? <TaskDetails /> : <Homepage />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }

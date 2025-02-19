@@ -7,6 +7,7 @@ export default function ConfirmationModal({
   onClose,
   onConfirm,
   message = "Are you sure?",
+  suggestions,
   confirmLabel = "Delete",
   cancelLabel = "Cancel"
 }) {
@@ -19,7 +20,7 @@ export default function ConfirmationModal({
         </Modal.Header>
         <Modal.Body>
           <p className="warning-text">{message}</p>
-          <p className="mt-3">This action cannot be undone. Deleting a task will permanently remove it.</p>
+          <p className="mt-3">{suggestions}</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={onClose}>
