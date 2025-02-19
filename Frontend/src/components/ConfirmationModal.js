@@ -6,6 +6,7 @@ export default function ConfirmationModal({
   show,
   onClose,
   onConfirm,
+  heading,
   message = "Are you sure?",
   suggestions,
   confirmLabel = "Delete",
@@ -16,7 +17,7 @@ export default function ConfirmationModal({
       <div className={`blur-background ${show ? "active" : ""}`}></div>
       <Modal show={show} onHide={onClose} centered backdrop="static" size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Delete Task</Modal.Title>
+          <Modal.Title>{heading}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p className="warning-text">{message}</p>

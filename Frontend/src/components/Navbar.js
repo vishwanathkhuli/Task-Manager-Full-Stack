@@ -105,6 +105,7 @@ export default function Navbar() {
           show={showLogoutModal}
           onClose={handleCloseLogoutModal}
           onConfirm={handleConfirmLogout}
+          heading="Logout"
           message="Are you sure you want to log out?"
           suggestions="After logout you will be redirected to login page"
           confirmLabel="Logout"
