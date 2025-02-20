@@ -154,6 +154,7 @@ export default function ViewTasks() {
         show={showModal}
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
+        heading="Delete Task"
         message={`Are you sure you want to delete the task "${taskToDelete?.title}"?`}
         suggestions="This action cannot be undone. Deleting a task will permanently remove it."
         confirmLabel="Delete"

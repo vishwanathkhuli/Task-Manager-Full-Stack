@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { selectUser, userActions } from "../redux/userReducer";
@@ -14,6 +14,9 @@ export default function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null); // Ref for menu button
 
   const generateInitial = (firstName) => {
     return `${firstName?.charAt(0) ?? ""}`.toUpperCase();
@@ -33,6 +36,30 @@ export default function Navbar() {
     setShowLogoutModal(false);
   };
 
+  // Toggle menu function
+  const toggleMenu = () => {
+    setMenuOpen((prev) => !prev);
+  };
+
+  // Close menu when clicking outside (ignores menu button)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target) // Ignore menu button clicks
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light fonts shadow-sm fixed-top" style={{ zIndex: 1050 }}>
       <div className="container-fluid">
@@ -43,19 +70,18 @@ export default function Navbar() {
           <h3 className="text-center mb-1 special-font">Task Manager</h3>
         </span>
 
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
-          data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-          aria-label="Toggle navigation">
+        {/* Menu Button */}
+        <button className="navbar-toggler" type="button" onClick={toggleMenu} ref={buttonRef}>
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div className={`collapse navbar-collapse ${menuOpen ? "show" : ""}`} id="navbarNav" ref={menuRef}>
           <ul className="navbar-nav ms-auto align-items-center">
             {user ? (
               <>
                 <li>
                   <button className="btn btn-outline-primary bg-primary me-2 p-2 fs-6"
-                    onClick={() => navigate("/dashboard")}
+                    onClick={() => { navigate("/dashboard"); setMenuOpen(false); }}
                     style={{ fontSize: "1rem" }}>
                     <MdDashboard className="me-2" /> Dashboard
                   </button>
@@ -63,7 +89,7 @@ export default function Navbar() {
                 <li className="nav-item">
                   <button className="btn btn-outline-success bg-success me-2 p-2 fs-6"
                     style={{ width: "50px", height: "45px", fontSize: "1rem", borderRadius: "12px" }}
-                    onClick={() => navigate("/profile")}>
+                    onClick={() => { navigate("/profile"); setMenuOpen(false); }}>
                     {user.profileImage ? (
                       <img src={user.profileImage} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px" }} />
                     ) : (
@@ -74,7 +100,7 @@ export default function Navbar() {
                 </li>
                 <li className="nav-item">
                   <button className="btn btn-outline-danger bg-danger me-2 p-2 fs-6"
-                    onClick={handleLogoutClick}
+                    onClick={() => { handleLogoutClick(); setMenuOpen(false); }}
                     style={{ fontSize: "1rem" }}>
                     <FaSignOutAlt className="me-2" /> Logout
                   </button>
@@ -84,13 +110,13 @@ export default function Navbar() {
               <>
                 <li className="nav-item">
                   <button className="btn btn-outline-success bg-success me-2 p-2 fs-6"
-                    onClick={() => navigate("/signup")}>
+                    onClick={() => { navigate("/signup"); setMenuOpen(false); }}>
                     Register
                   </button>
                 </li>
                 <li className="nav-item">
                   <button className="btn btn-outline-success bg-success me-2 p-2 fs-6"
-                    onClick={() => navigate("/signin")}>
+                    onClick={() => { navigate("/signin"); setMenuOpen(false); }}>
                     Login
                   </button>
                 </li>
