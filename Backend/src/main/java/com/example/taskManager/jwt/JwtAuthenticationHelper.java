@@ -27,7 +27,8 @@ public class JwtAuthenticationHelper {
 
     public JwtAuthenticationHelper(@Value("${jwt.secret}") String secretKeyString) {
         byte[] keyBytes = Base64.getEncoder().encode(secretKeyString.getBytes());
-        this.secretKey = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS512.getJcaName());
+        // Change to HS256
+        this.secretKey = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
     public String getUsernameFromToken(String token) {
@@ -67,7 +68,8 @@ public class JwtAuthenticationHelper {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + validity))
-                .signWith(secretKey, SignatureAlgorithm.HS512)
+                // Change to HS256
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 

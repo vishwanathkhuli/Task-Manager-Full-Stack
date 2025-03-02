@@ -1,11 +1,14 @@
 spring:
   application:
-    name: Backend
+   name: Backend
   profiles.active: ${ENV:dev}
 
 server:
   port: 8080
 
-jwt.secret : vishwanathkkhuli19012001mangalwadramapurhaliyalbengaluruasdfasdfasdfasdfsdfasdfasd
-jwt.token.validity : 604800000  # 7 days in milliseconds
-jwt.refresh.token.validity : 604800000  # 7 days in milliseconds
+# Shortened and optimized JWT secret (32+ characters recommended for HS256)
+jwt.secret: VishwanathSecureKey@123456
+
+# Reduce token validity if needed (e.g., 3 days for access tokens)
+jwt.token.validity: 259200000  # 3 days in milliseconds
+jwt.refresh.token.validity: 604800000  # 7 days in milliseconds
