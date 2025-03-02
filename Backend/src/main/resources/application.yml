@@ -1,14 +1,17 @@
 spring:
   application:
-   name: Backend
-  profiles.active: ${ENV:dev}
+    name: Backend
+  profiles:
+    active: ${ENV:dev}
 
 server:
   port: 8080
 
-# Shortened and optimized JWT secret (at least 16 characters for HS128)
-jwt.secret: VishwanathSecureKey@123456  # 16+ characters
-
-# Reduce token validity if needed
-jwt.token.validity: 259200000  # 3 days in milliseconds
-jwt.refresh.token.validity: 604800000  # 7 days in milliseconds
+# Strong 256-bit JWT secret (must be at least 32 characters for HS256)
+jwt:
+  secret: "ThisIsAReallyStrongHS256SecretKey@123"  # 32+ characters, strong & random
+  token:
+    validity: 259200000   # 3 days in milliseconds
+  refresh:
+    token:
+      validity: 604800000  # 7 days in milliseconds
