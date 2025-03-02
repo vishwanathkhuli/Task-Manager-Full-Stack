@@ -71,7 +71,7 @@ public class JwtAuthenticationHelper {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + validity))
-                .signWith(secretKey, SignatureAlgorithm.HS256)  // Use HS128
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
