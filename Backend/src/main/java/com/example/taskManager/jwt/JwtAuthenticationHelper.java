@@ -26,9 +26,12 @@ public class JwtAuthenticationHelper {
     private long refreshTokenValidity;
 
     public JwtAuthenticationHelper(@Value("${jwt.secret}") String secretKeyString) {
+        // Ensure key length is 16 bytes (128 bits)
         byte[] keyBytes = Base64.getEncoder().encode(secretKeyString.getBytes());
-        // Change to HS256
-        this.secretKey = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
+        if (keyBytes.length < 16) {
+            throw new IllegalArgumentException("Secret key must be at least 16 bytes for HS128");
+        }
+        this.secretKey = new SecretKeySpec(keyBytes, 0, 16, SignatureAlgorithm.HS256.getJcaName()); // Use only first 16 bytes
     }
 
     public String getUsernameFromToken(String token) {
@@ -68,8 +71,7 @@ public class JwtAuthenticationHelper {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + validity))
-                // Change to HS256
-                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .signWith(secretKey, SignatureAlgorithm.HS256)  // Use HS128
                 .compact();
     }
 

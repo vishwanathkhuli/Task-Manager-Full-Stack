@@ -6,9 +6,9 @@ spring:
 server:
   port: 8080
 
-# Shortened and optimized JWT secret (32+ characters recommended for HS256)
-jwt.secret: VishwanathSecureKey@123456
+# Shortened and optimized JWT secret (at least 16 characters for HS128)
+jwt.secret: VishSecureKey@123  # 16+ characters
 
-# Reduce token validity if needed (e.g., 3 days for access tokens)
+# Reduce token validity if needed
 jwt.token.validity: 259200000  # 3 days in milliseconds
 jwt.refresh.token.validity: 604800000  # 7 days in milliseconds
