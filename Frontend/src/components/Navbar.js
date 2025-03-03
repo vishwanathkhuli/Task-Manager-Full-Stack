@@ -18,54 +18,40 @@ export default function Navbar() {
   const menuRef = useRef(null);
   const buttonRef = useRef(null); // Ref for menu button
 
-  const generateInitial = (firstName) => {
-    return `${firstName?.charAt(0) ?? ""}`.toUpperCase();
-  };
+  const generateInitial = (firstName) => firstName?.charAt(0)?.toUpperCase() ?? "";
 
-  const handleLogoutClick = () => {
-    setShowLogoutModal(true);
-  };
+  const handleLogoutClick = () => setShowLogoutModal(true);
+  const handleCloseLogoutModal = () => setShowLogoutModal(false);
 
   const handleConfirmLogout = () => {
     dispatch(userActions.logoutUser());
-    navigate("/signin");
     setShowLogoutModal(false);
-  };
-
-  const handleCloseLogoutModal = () => {
-    setShowLogoutModal(false);
+    Promise.resolve().then(() => navigate("/signin")); // Ensures immediate redirection
   };
 
   // Toggle menu function
-  const toggleMenu = () => {
-    setMenuOpen((prev) => !prev);
-  };
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   // Close menu when clicking outside (ignores menu button)
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target) // Ignore menu button clicks
-      ) {
+      if (!menuRef.current?.contains(event.target) && !buttonRef.current?.contains(event.target)) {
         setMenuOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light fonts shadow-sm fixed-top" style={{ zIndex: 1050 }}>
       <div className="container-fluid">
-        <span className="navbar-brand d-flex align-items-center cursor-pointer"
-          onClick={() => navigate('/')}
-          style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
+        <span
+          className="navbar-brand d-flex align-items-center cursor-pointer"
+          onClick={() => navigate("/")}
+          style={{ fontWeight: "bold", fontSize: "1.5rem" }}
+        >
           <FaTasks className="me-2" style={{ color: "rgb(0, 104, 74)", fontSize: "1rem" }} />
           <h3 className="text-center mb-1 special-font">Task Manager</h3>
         </span>
@@ -80,18 +66,31 @@ export default function Navbar() {
             {user ? (
               <>
                 <li>
-                  <button className="btn btn-outline-primary bg-primary me-2 p-2 fs-6"
-                    onClick={() => { navigate("/dashboard"); setMenuOpen(false); }}
-                    style={{ fontSize: "1rem" }}>
+                  <button
+                    className="btn btn-outline-primary bg-primary me-2 p-2 fs-6"
+                    onClick={() => {
+                      navigate("/dashboard");
+                      setMenuOpen(false);
+                    }}
+                  >
                     <MdDashboard className="me-2" /> Dashboard
                   </button>
                 </li>
                 <li className="nav-item">
-                  <button className="btn btn-outline-success bg-success me-2 p-2 fs-6"
-                    style={{ width: "50px", height: "45px", fontSize: "1rem", borderRadius: "12px" }}
-                    onClick={() => { navigate("/profile"); setMenuOpen(false); }}>
+                  <button
+                    className="btn btn-outline-success bg-success me-2 p-2 fs-6"
+                    style={{ width: "50px", height: "45px", borderRadius: "12px" }}
+                    onClick={() => {
+                      navigate("/profile");
+                      setMenuOpen(false);
+                    }}
+                  >
                     {user.profileImage ? (
-                      <img src={user.profileImage} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px" }} />
+                      <img
+                        src={user.profileImage}
+                        alt="Profile"
+                        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px" }}
+                      />
                     ) : (
                       generateInitial(user.firstName)
                     )}
@@ -99,9 +98,13 @@ export default function Navbar() {
                   {user.profileImage && <span className="ms-2 text-dark fs-5">{user.firstName}</span>}
                 </li>
                 <li className="nav-item">
-                  <button className="btn btn-outline-danger bg-danger me-2 p-2 fs-6"
-                    onClick={() => { handleLogoutClick(); setMenuOpen(false); }}
-                    style={{ fontSize: "1rem" }}>
+                  <button
+                    className="btn btn-outline-danger bg-danger me-2 p-2 fs-6"
+                    onClick={() => {
+                      handleLogoutClick();
+                      setMenuOpen(false);
+                    }}
+                  >
                     <FaSignOutAlt className="me-2" /> Logout
                   </button>
                 </li>
@@ -109,14 +112,12 @@ export default function Navbar() {
             ) : (
               <>
                 <li className="nav-item">
-                  <button className="btn btn-outline-success bg-success me-2 p-2 fs-6"
-                    onClick={() => { navigate("/signup"); setMenuOpen(false); }}>
+                  <button className="btn btn-outline-success bg-success me-2 p-2 fs-6" onClick={() => navigate("/signup")}>
                     Register
                   </button>
                 </li>
                 <li className="nav-item">
-                  <button className="btn btn-outline-success bg-success me-2 p-2 fs-6"
-                    onClick={() => { navigate("/signin"); setMenuOpen(false); }}>
+                  <button className="btn btn-outline-success bg-success me-2 p-2 fs-6" onClick={() => navigate("/signin")}>
                     Login
                   </button>
                 </li>

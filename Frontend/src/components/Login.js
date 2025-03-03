@@ -8,20 +8,26 @@ export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [emailVisible, setEmailVisible] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const togglePasswordVisibility = useCallback(() => {
-    setPasswordVisible((prev) => !prev);
+  const handleChange = useCallback((e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }, []);
 
-  const toRegister = useCallback(() => {
-    navigate("/signup");
-  }, [navigate]);
+  const toggleVisibility = useCallback((field) => {
+    field === "password"
+      ? setPasswordVisible((prev) => !prev)
+      : setEmailVisible((prev) => !prev);
+  }, []);
+
+  const toRegister = useCallback(() => navigate("/signup"), [navigate]);
+  const toForgotPassword = useCallback(() => navigate("/reset-password"), [navigate]);
 
   const validateForm = useCallback(() => {
+    const { email, password } = formData;
     const newErrors = {};
 
     if (!email.trim()) {
@@ -33,26 +39,26 @@ export default function Login() {
     if (password.length < 8) {
       newErrors.password = "Password must be at least 8 characters long.";
     } else if (!/[A-Z]/.test(password)) {
-      newErrors.password = "Password must contain at least one uppercase letter.";
+      newErrors.password = "Must contain at least one uppercase letter.";
     } else if (!/[a-z]/.test(password)) {
-      newErrors.password = "Password must contain at least one lowercase letter.";
+      newErrors.password = "Must contain at least one lowercase letter.";
     } else if (!/[!@#$%^&*]/.test(password)) {
-      newErrors.password = "Password must contain at least one special character (!@#$%^&*).";
+      newErrors.password = "Must contain at least one special character (!@#$%^&*).";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [email, password]);
+  }, [formData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     try {
-      await dispatch(loginUser({ email, password })).unwrap();
-      navigate('/dashboard');
-    } catch (err) {
-      setErrors({ general: "Login failed. Please check your credentials." });
+      await dispatch(loginUser(formData)).unwrap();
+      navigate("/dashboard");
+    } catch {
+      setErrors((prev) => ({ ...prev, general: "Login failed. Check credentials." }));
     }
   };
 
@@ -69,22 +75,30 @@ export default function Login() {
         </div>
 
         <form onSubmit={handleSubmit} className="d-flex flex-column">
+          {/* Email Input */}
           <div className="mb-3">
             <label htmlFor="user-email" className="text-dark fs-5 d-flex align-items-center">
               <FaEnvelope className="me-2" />
               Email Address
             </label>
-            <input
-              id="user-email"
-              type="email"
-              className="form-control custom-input"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <div className="input-group">
+              <input
+                id="user-email"
+                name="email"
+                type={emailVisible ? "text" : "email"}
+                className="form-control custom-input"
+                placeholder="Enter email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <span className="input-group-text" onClick={() => toggleVisibility("email")} style={{ cursor: "pointer" }}>
+                {emailVisible ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
             {errors.email && <p className="text-danger fs-6">{errors.email}</p>}
           </div>
 
+          {/* Password Input */}
           <div className="mb-3">
             <label htmlFor="user-pass" className="text-dark fs-5 d-flex align-items-center">
               <FaLock className="me-2" />
@@ -93,18 +107,28 @@ export default function Login() {
             <div className="input-group">
               <input
                 id="user-pass"
+                name="password"
                 type={passwordVisible ? "text" : "password"}
                 className="form-control custom-input"
                 placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={handleChange}
               />
-              <span className="input-group-text" onClick={togglePasswordVisibility} style={{ cursor: 'pointer' }}>
+              <span className="input-group-text" onClick={() => toggleVisibility("password")} style={{ cursor: "pointer" }}>
                 {passwordVisible ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
             {errors.password && <p className="text-danger fs-6">{errors.password}</p>}
           </div>
+
+          {/* Forgot Password */}
+          <div className="d-flex align-items-center">
+            <span className="text-primary fs-6 ms-1 cursor-pointer" onClick={toForgotPassword}>
+              Forgot Password?
+            </span>
+          </div>
+
+          {/* Submit Button */}
           <button type="submit" className="btn btn-success w-40 m-auto text-white fs-5 rounded-3 mt-3">
             Login
           </button>

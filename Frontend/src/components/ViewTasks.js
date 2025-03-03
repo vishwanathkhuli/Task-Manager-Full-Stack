@@ -10,6 +10,7 @@ import {
   MdRemoveRedEye,
   MdFlag,
   MdAccessTime,
+  MdSearch
 } from "react-icons/md";
 import "./Viewtasks.css";
 
@@ -17,6 +18,7 @@ export default function ViewTasks() {
   const { tasks } = useSelector(selectTask);
   const [showModal, setShowModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(""); // Search state
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -59,28 +61,42 @@ export default function ViewTasks() {
     return (completedSubtasks / subtasks.length) * 100;
   };
 
+  const filteredTasks = tasks.filter((task) =>
+    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="view-tasks-wrapper">
       {/* Add Task Button */}
-      <div>
+      <div className="d-flex justify-content-between m-1">
         <button
-          className="btn btn-success add-task-btn-top text-white fs-5 rounded-3"
+          className="btn btn-success add-task-btn-top text-white fs-6 rounded-3"
           onClick={handleAddTask}
         >
           <MdAddTask />
-          <span className="ms-2">Add Task</span>
+          <span className="fs-6">Add Task</span>
         </button>
+        <div className="search-container fs-6">
+          <MdSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="search-input fs-6"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="tasks-container">
-        {tasks &&
-          tasks.map((task, index) => {
+        {filteredTasks &&
+          filteredTasks.map((task, index) => {
             const progress = calculateProgress(task.subTasks);
 
             return (
               <div key={index} className="task-card">
                 <div className="title-wrapper">
-                  <h4 className="task-title">{task.title}</h4>
+                  <h4 className="task-title fs-5">{task.title}</h4>
                 </div>
                 <p className="task-description">{task.description}</p>
                 <div className="d-flex justify-content-between mb-3">

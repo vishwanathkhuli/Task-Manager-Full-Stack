@@ -2,8 +2,10 @@ package com.example.taskManager.service;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.taskManager.dto.AuthResponse;
 import com.example.taskManager.dto.UpdateUserRequest;
@@ -98,5 +100,30 @@ public class UserService {
 		userDetails.setEmail(user.getEmail());
 		return userDetails;
 	}
+
+	public ResponseEntity<?> verifyEmail(String email) {
+	    // Check if the user exists by email
+	    Optional<User> existingUser = userRepository.findByEmail(email);
+
+	    if (existingUser.isPresent()) {
+	        return ResponseEntity.ok("Email is verified.");
+	    } else {
+	        throw new UserNotFoundException("User with email " + email + " not found.");
+	    }
+	}
+	
+	public String resetPassword(String email, String newPassword) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (!optionalUser.isPresent()) {
+            throw new UserNotFoundException("User with email " + email + " not found.");
+        }
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        User user = optionalUser.get();
+        user.setPassword(passwordEncoder.encode(newPassword)); // Encrypt the new password
+        userRepository.save(user);
+
+        return "Password reset successfully.";
+    }
 
 }

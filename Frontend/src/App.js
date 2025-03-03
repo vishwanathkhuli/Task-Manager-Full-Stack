@@ -5,6 +5,7 @@ import { selectUser } from './redux/userReducer';
 import { useEffect, Suspense, lazy } from 'react';
 import Navbar from './components/Navbar';
 import NotificationModel from './components/NotificationModel';
+import PasswordReset from './components/PasswordReset';
 
 // Lazy imports
 const Homepage = lazy(() => import('./pages/Homepage'));
@@ -15,6 +16,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const UpdateTask = lazy(() => import('./components/UpdateTask'));
 const Profile = lazy(() => import('./components/Profile'));
 const TaskDetails = lazy(() => import('./components/TaskDetails'));
+const PageNotFound = lazy(() => import('./components/PageNotFound'));
 
 function App() {
   const { user } = useSelector(selectUser);
@@ -37,6 +39,8 @@ function App() {
           <Route path="/task/:id" element={<UpdateTask />} />
           <Route path='/profile' element={user ? <Profile /> : <Homepage />} />
           <Route path='/task-details/:id' element={user ? <TaskDetails /> : <Homepage />} />
+          <Route path='/reset-password' element={<PasswordReset />} />
+          <Route path='/*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
     </div>
