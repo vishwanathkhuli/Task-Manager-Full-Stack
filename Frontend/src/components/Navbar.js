@@ -44,12 +44,18 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Function to handle navigation and close menu
+  const handleNavigation = (path) => {
+    navigate(path);
+    setMenuOpen(false);
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light fonts shadow-sm fixed-top" style={{ zIndex: 1050 }}>
       <div className="container-fluid">
         <span
           className="navbar-brand d-flex align-items-center cursor-pointer"
-          onClick={() => navigate("/")}
+          onClick={() => handleNavigation("/")}
           style={{ fontWeight: "bold", fontSize: "1.5rem" }}
         >
           <FaTasks className="me-2" style={{ color: "rgb(0, 104, 74)", fontSize: "1rem" }} />
@@ -68,10 +74,7 @@ export default function Navbar() {
                 <li>
                   <button
                     className="btn btn-outline-primary bg-primary me-2 p-2 fs-6"
-                    onClick={() => {
-                      navigate("/dashboard");
-                      setMenuOpen(false);
-                    }}
+                    onClick={() => handleNavigation("/dashboard")}
                   >
                     <MdDashboard className="me-2" /> Dashboard
                   </button>
@@ -80,10 +83,7 @@ export default function Navbar() {
                   <button
                     className="btn btn-outline-success bg-success me-2 p-2 fs-6"
                     style={{ width: "50px", height: "45px", borderRadius: "12px" }}
-                    onClick={() => {
-                      navigate("/profile");
-                      setMenuOpen(false);
-                    }}
+                    onClick={() => handleNavigation("/profile")}
                   >
                     {user.profileImage ? (
                       <img
@@ -112,12 +112,12 @@ export default function Navbar() {
             ) : (
               <>
                 <li className="nav-item">
-                  <button className="btn btn-outline-success bg-success me-2 p-2 fs-6" onClick={() => navigate("/signup")}>
+                  <button className="btn btn-outline-success bg-success me-2 p-2 fs-6" onClick={() => handleNavigation("/signup")}>
                     Register
                   </button>
                 </li>
                 <li className="nav-item">
-                  <button className="btn btn-outline-success bg-success me-2 p-2 fs-6" onClick={() => navigate("/signin")}>
+                  <button className="btn btn-outline-success bg-success me-2 p-2 fs-6" onClick={() => handleNavigation("/signin")}>
                     Login
                   </button>
                 </li>

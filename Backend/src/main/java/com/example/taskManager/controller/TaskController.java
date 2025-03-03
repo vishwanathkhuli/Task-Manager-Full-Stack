@@ -37,21 +37,18 @@ public class TaskController {
 	@PostMapping("/task/add")
 	public ResponseEntity<Task> addTask(@RequestBody Task task, @RequestHeader("Authorization") String header){
 		Task response = taskService.addTask(task, header);
-		System.out.println("Task added succesfully.");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@PutMapping("/task/update")
 	public ResponseEntity<Task> updateTask(@RequestBody Task task, @RequestHeader("Authorization") String header){
 		Task response = taskService.updateTask(task, header);
-		System.out.println("Task updated succesfully.");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@DeleteMapping("task/delete")
 	public ResponseEntity<Task> deleteTask(@RequestBody Task task, @RequestHeader("Authorization") String header){
 		Task response = taskService.deleteTask(task, header);
-		System.out.println("Task removed succesfully.");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }
