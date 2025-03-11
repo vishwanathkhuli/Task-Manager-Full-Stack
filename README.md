@@ -1,6 +1,6 @@
 # 📝 Task Manager Full Stack Web Application  
 
-![Task Manager Banner](screenshots/banner.png)  
+![Task Manager Banner](/Static/Images/Homepage.png)  
 
 ## 📌 About the Project  
 The **Task Manager** is a **full-stack web application** that helps users **create, assign, track, and manage tasks** efficiently. Built with **React, Redux, Spring Boot, and MongoDB**, it provides **secure JWT authentication**, **role-based access**, and **Docker support for deployment**.  
@@ -23,7 +23,7 @@ The **Task Manager** is a **full-stack web application** that helps users **crea
 ### 🔹 **Frontend:**  
 - React.js  
 - Redux Toolkit  
-- Tailwind CSS / Material UI  
+- Bootstrap & CSS 
 
 ### 🔹 **Backend:**  
 - Java  
@@ -42,8 +42,8 @@ The **Task Manager** is a **full-stack web application** that helps users **crea
 ### 🔹 Homepage View  
 ![Homepage](/Static/Images/Homepage.png)  
 
-### 🔹 Task Management  
-![Task Management](/Static/Images/Dashboard.png)  
+### 🔹 Dashboard  
+![Dashboard](/Static/Images/Dashboard.png)  
 
 ### 🔹 Login & Signup  
 ![Register](/Static/Images/Register.png)  
