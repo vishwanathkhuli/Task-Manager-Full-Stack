@@ -91,9 +91,6 @@ export default function Login() {
                 value={formData.email}
                 onChange={handleChange}
               />
-              <span className="input-group-text" onClick={() => toggleVisibility("email")} style={{ cursor: "pointer" }}>
-                {emailVisible ? <FaEyeSlash /> : <FaEye />}
-              </span>
             </div>
             {errors.email && <p className="text-danger fs-6">{errors.email}</p>}
           </div>
