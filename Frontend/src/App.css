@@ -43,7 +43,7 @@
 }
 
 body {
-  padding-top: 70px;
+  padding-top: 80px;
   /* Adjust based on the height of your navbar */
 }
 
@@ -131,6 +131,39 @@ input.form-control {
 }
 
 @media (max-width: 768px) {
+
+  body {
+    padding-top: 55px;
+  }
+
+  .main {
+    flex-direction: column-reverse !important;
+    width: 100% !important;
+    padding: none !important;
+  }
+
+  .left-side {
+    max-width: 100% !important;
+    height: 50% !important;
+    padding: none !important;
+    align-items: center;
+  }
+
+  .main .heading-fonts {
+    font-size: 2rem !important;
+  }
+
+  .left-side p {
+    font-size: 0.875rem !important;
+  }
+
+  .right-side {
+    max-width: 100% !important;
+    height: 40% !important;
+    margin: none !important;
+    padding: none !important;
+  }
+
   .add-task-text {
     display: none;
   }

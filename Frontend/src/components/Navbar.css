@@ -12,9 +12,3 @@
   z-index: 1050;
   /* Ensure navbar is always above the content */
 }
-
-/* Add some spacing for content below the navbar */
-body {
-  padding-top: 80px;
-  /* Adjust this value according to your navbar height */
-}
