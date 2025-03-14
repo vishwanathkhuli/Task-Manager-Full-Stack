@@ -69,7 +69,7 @@ export default function UpdateTask() {
 
   return (
     <div
-      className="container mt-1 pt-4"
+      className="container mt-1 pt-4 update-task"
       style={{ maxWidth: "800px" }}
     >
       <form onSubmit={handleSubmit} className="shadow p-4 rounded bg-light">

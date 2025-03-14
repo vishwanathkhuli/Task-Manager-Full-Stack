@@ -5,11 +5,10 @@
   background-color: rgb(248, 249, 250);
 }
 
-.view-tasks-wrapper>div {
+.view-tasks-wrapper .d {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-evenly;
   align-items: center;
-  margin-bottom: 16px;
 }
 
 /* Top Add Task Button */
@@ -217,4 +216,12 @@ button {
 .progress-bar {
   height: 100%;
   border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .view-tasks-wrapper {
+    position: relative;
+    top: -55px;
+    left: 0;
+  }
 }

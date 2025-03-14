@@ -119,7 +119,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="container d-flex flex-column align-items-center justify-content-center">
+    <div className="container d-flex flex-column align-items-center justify-content-center pt-4">
       <div className="card border-0" style={{ maxWidth: "600px", width: "100%" }}>
         {isEditing ? <h3 className="text-center mb-3 special-font">Updating My Details</h3> : <h3 className="text-center mb-3 special-font">My Profile</h3>}
         <form className="d-flex flex-column" onSubmit={handleSubmit}>

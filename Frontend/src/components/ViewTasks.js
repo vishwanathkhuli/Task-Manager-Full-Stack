@@ -68,7 +68,7 @@ export default function ViewTasks() {
   return (
     <div className="view-tasks-wrapper">
       {/* Add Task Button */}
-      <div className="d-flex justify-content-between m-1">
+      <div className="d-flex justify-content-between m-1 d">
         <button
           className="btn btn-success add-task-btn-top text-white fs-6 rounded-3"
           onClick={handleAddTask}
@@ -76,7 +76,7 @@ export default function ViewTasks() {
           <MdAddTask />
           <span className="fs-6">Add Task</span>
         </button>
-        <div className="search-container fs-6">
+        <div className="search-container fs-6 d">
           <MdSearch className="search-icon" />
           <input
             type="text"
@@ -88,7 +88,7 @@ export default function ViewTasks() {
         </div>
       </div>
 
-      <div className="tasks-container">
+      <div className="tasks-container d">
         {filteredTasks &&
           filteredTasks.map((task, index) => {
             const progress = calculateProgress(task.subTasks);

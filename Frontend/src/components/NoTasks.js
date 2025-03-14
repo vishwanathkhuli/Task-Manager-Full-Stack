@@ -7,7 +7,7 @@ export default function NoTasks() {
   return (
     <>
       <div
-        className="container-fluid d-flex align-items-center justify-content-center main"
+        className="container-fluid d-flex align-items-center justify-content-center main no-task"
         style={{
           height: "calc(100vh - 70px)",
           padding: "20px",
