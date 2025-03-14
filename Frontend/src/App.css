@@ -90,8 +90,6 @@ input.form-control {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  height: 85vh;
-
 }
 
 .left-side {
@@ -133,7 +131,7 @@ input.form-control {
 @media (max-width: 768px) {
 
   body {
-    padding-top: 55px;
+    padding-top: 120px !important;
   }
 
   .main {
@@ -145,7 +143,7 @@ input.form-control {
   .left-side {
     max-width: 100% !important;
     height: 50% !important;
-    padding: none !important;
+    padding: 20px !important;
     align-items: center;
   }
 
@@ -161,7 +159,7 @@ input.form-control {
     max-width: 100% !important;
     height: 40% !important;
     margin: none !important;
-    padding: none !important;
+    padding: 20px !important;
   }
 
   .add-task-text {
@@ -171,4 +169,5 @@ input.form-control {
   .search-container {
     width: 40%;
   }
+
 }

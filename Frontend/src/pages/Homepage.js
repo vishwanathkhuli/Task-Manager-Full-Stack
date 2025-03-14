@@ -9,10 +9,10 @@ export default function Homepage() {
   return (
     <div
       className="container-fluid d-flex align-items-center justify-content-between main"
-      style={{ height: "calc(100vh - 70px)", padding: "20px" }}
+      style={{ height: "calc(100vh - 80px)" }}
     >
       {/* Left Side */}
-      <div className="left-side" style={{ maxWidth: "50%", padding: "20px" }}>
+      <div className="left-side" style={{ maxWidth: "50%", }}>
         <h1 className="heading-fonts" style={{ fontWeight: "bold", fontSize: "3rem", color: "#007B5E" }}>
           Organize your work and life, finally.
         </h1>
@@ -40,7 +40,7 @@ export default function Homepage() {
       {/* Right Side with Lottie Animation */}
       <div
         className="right-side d-flex align-items-center justify-content-center"
-        style={{ maxWidth: "50%", textAlign: "center", padding: "20px" }}
+        style={{ maxWidth: "50%", textAlign: "center" }}
       >
         <Lottie animationData={animationData} style={{ width: "100%", maxWidth: "400px" }} />
       </div>
