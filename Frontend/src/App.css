@@ -180,4 +180,9 @@ input.form-control {
     top: -55px;
     left: 0;
   }
+
+  .social-logo-container {
+    width: 100%;
+    flex-direction: column;
+  }
 }
