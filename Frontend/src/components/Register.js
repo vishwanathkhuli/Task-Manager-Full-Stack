@@ -1,12 +1,15 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { registerUser } from "../redux/userReducer";
+import { registerUser } from "../redux/userReducer"; // ✅ Redux action for registration
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import apiClient from "../api/api";
 
 export default function Register() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); // ✅ Redux dispatch function
+  const apiKey = process.env.REACT_APP_EMAIL_API_KEY;
+  const emailCheckTimeout = useRef(null);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -17,16 +20,53 @@ export default function Register() {
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errors, setErrors] = useState({});
+  const [emailValid, setEmailValid] = useState(null);
+  const [emailMessage, setEmailMessage] = useState("");
 
   const toLogin = useCallback(() => navigate("/signin"), [navigate]);
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "email") {
+      setEmailValid(null);
+      setErrors((prev) => ({ ...prev, email: undefined }));
+      setEmailMessage("");
+
+      if (emailCheckTimeout.current) clearTimeout(emailCheckTimeout.current);
+      emailCheckTimeout.current = setTimeout(() => {
+        isEmailExist(value);
+      }, 500);
+    }
   };
 
   const togglePasswordVisibility = useCallback(() => {
     setPasswordVisible((prev) => !prev);
   }, []);
+
+  const isEmailExist = async (email) => {
+    if (!email) return;
+
+    try {
+      const response = await apiClient.get(
+        `https://apilayer.net/api/check?access_key=${apiKey}&email=${email}&smtp=1&format=1`
+      );
+
+      if (!response.data.smtp_check) {
+        setErrors((prev) => ({ ...prev, email: " Email does not exist!" }));
+        setEmailValid(false);
+        setEmailMessage("Email does not exist!");
+      } else {
+        setEmailValid(true);
+        setEmailMessage("Valid email");
+      }
+    } catch (e) {
+      console.log(e);
+      setErrors((prev) => ({ ...prev, email: "Failed to verify email!" }));
+      setEmailMessage("Failed to verify email!");
+    }
+  };
 
   const validateForm = useCallback(() => {
     const { firstName, lastName, email, password } = formData;
@@ -58,9 +98,13 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    if (!emailValid) {
+      setErrors((prev) => ({ ...prev, email: "Email verification failed!" }));
+      return;
+    }
 
     try {
-      await dispatch(registerUser(formData)).unwrap();
+      await dispatch(registerUser(formData)).unwrap(); // ✅ Dispatch Redux action to register user
       navigate("/signin");
     } catch (error) {
       setErrors({ general: "Registration failed. Please try again." });
@@ -129,7 +173,11 @@ export default function Register() {
                 value={formData.email}
                 onChange={handleInputChange}
               />
-              {errors.email && <p className="text-danger fs-6">{errors.email}</p>}
+              {emailMessage && (
+                <p className={emailValid ? "text-success fs-6" : "text-danger fs-6"}>
+                  {emailMessage}
+                </p>
+              )}
             </div>
             <div className="col-12 col-md-6">
               <label htmlFor="password" className="text-dark fs-5 d-flex align-items-center">
@@ -153,7 +201,7 @@ export default function Register() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-success w-40 m-auto fs-5 rounded-3 mt-3">
+          <button type="submit" className="btn btn-success w-40 m-auto fs-6 rounded-3 mt-3">
             Register
           </button>
         </form>

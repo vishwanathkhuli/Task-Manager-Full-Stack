@@ -1,5 +1,6 @@
 package com.example.taskManager.controller;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,43 +25,43 @@ import com.example.taskManager.service.UserService;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	
+
 	private UserService userService;
-	
+
 	@Autowired
 	public UserController(UserService userService) {
 		this.userService = userService;
 	}
-	
+
 	@PostMapping("/signup")
 	public ResponseEntity<?> signUp(@RequestBody UserRegisterRequest userReigsterRequest) {
 		userService.signUp(userReigsterRequest);
 		return ResponseEntity.ok("User registeredSuccessfull");
 	}
-	
+
 	@PostMapping("/signin")
-	public ResponseEntity<AuthResponse> signIn(@RequestBody UserSigninRequest userSigninRequest){
+	public ResponseEntity<AuthResponse> signIn(@RequestBody UserSigninRequest userSigninRequest) {
 		AuthResponse response = userService.signIn(userSigninRequest);
 		System.out.println("The user logged in succesfully");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/update")
-	public ResponseEntity<UserDetailsDTO> updateUser(@RequestBody UpdateUserRequest updateUser){
+	public ResponseEntity<UserDetailsDTO> updateUser(@RequestBody UpdateUserRequest updateUser) {
 		UserDetailsDTO updatedUser = userService.updateUser(updateUser);
 		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/verify/{email}")
 	public ResponseEntity<?> verifyEmail(@PathVariable("email") String email) {
 		System.out.println(email);
-	    return userService.verifyEmail(email);
+		return userService.verifyEmail(email);
 	}
-	
+
 	@PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-        String response = userService.resetPassword(request.getEmail(), request.getPassword());
-        return ResponseEntity.ok(response);
-    }
+	public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+		String response = userService.resetPassword(request.getEmail(), request.getPassword());
+		return ResponseEntity.ok(response);
+	}
 
 }

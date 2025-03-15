@@ -3,6 +3,18 @@ spring:
     name: Backend
   profiles:
     active: ${ENV:dev}
+  mail:
+   host: smtp.gmail.com
+   port: 587
+   username: vishwanathkhuli347@gmail.com
+   password: hwht ncrz kvpo fmmk
+   properties:
+    mail:
+     smtp:
+      auth: true
+      starttls:
+       enable: true
+   default-encoding: UTF-8
 
 server:
   port: 8080
@@ -14,4 +26,5 @@ jwt:
     validity: 259200000   # 3 days in milliseconds
   refresh:
     token:
-      validity: 604800000  # 7 days in milliseconds
+      validity: 604800000  # 7 days in millisecond
+

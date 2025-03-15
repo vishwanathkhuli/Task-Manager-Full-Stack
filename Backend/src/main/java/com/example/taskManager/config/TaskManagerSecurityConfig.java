@@ -40,7 +40,16 @@ public class TaskManagerSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
             .authorizeHttpRequests()
-                .requestMatchers("/user/signup", "/user/signin","user/verify/{email}", "user/reset-password", "/static/**", "/public/**").permitAll()
+                .requestMatchers(
+                    "/user/signup", 
+                    "/user/signin", 
+                    "/user/verify/{email}", 
+                    "/user/reset-password", 
+                    "/api/otp/send",
+                    "/api/otp/verify**",
+                    "/static/**", 
+                    "/public/**"
+                ).permitAll()
                 .requestMatchers("/user/profile").authenticated()
                 .anyRequest().authenticated()
                 .and()

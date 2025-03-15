@@ -126,7 +126,7 @@ export default function Login() {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn btn-success w-40 m-auto text-white fs-5 rounded-3 mt-3">
+          <button type="submit" className="btn btn-success w-40 m-auto text-white fs-6 rounded-3 mt-3">
             Login
           </button>
         </form>

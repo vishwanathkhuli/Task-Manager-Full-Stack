@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaCheckCircle, FaArrowLeft } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaCheckCircle, FaArrowLeft, FaKey } from "react-icons/fa";
 import apiClient from "../api/api";
 import { notificationActions } from "../redux/notificationReducer";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,9 @@ export default function PasswordReset() {
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
-  const [emailVerified, setEmailVerified] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -41,21 +43,46 @@ export default function PasswordReset() {
     return Object.keys(newErrors).length === 0;
   }, [email]);
 
-  const handleVerifyEmail = async () => {
+  // ✅ Send OTP (GET request with email as query param)
+  const handleSendOtp = async () => {
     if (!validateEmail()) return;
     setLoading(true);
-    dispatch(notificationActions.setNotification({ message: "Verifying email...", status: "loading" }));
+    dispatch(notificationActions.setNotification({ message: "Sending OTP...", status: "loading" }));
 
     try {
-      const response = await apiClient.get(`/user/verify/${encodeURIComponent(email)}`);
-      const data = await response.data;
+      const response = await apiClient.get(`/api/otp/send?email=${encodeURIComponent(email)}`);
+      console.log(response.data);
       if (response.status === 200) {
-        setEmailVerified(true);
-        dispatch(notificationActions.setNotification({ message: data, status: "success" }));
+        setOtpSent(true);
+        dispatch(notificationActions.setNotification({ message: "OTP sent successfully", status: "success" }));
       }
     } catch (error) {
-      setErrors({ email: error.response?.data?.message || "Email verification failed. User not found." });
-      dispatch(notificationActions.setNotification({ message: "Email verification failed", status: "error" }));
+      setErrors({ email: error.response?.data?.message || "Failed to send OTP. Try again." });
+      dispatch(notificationActions.setNotification({ message: "OTP sending failed", status: "error" }));
+    }
+    setLoading(false);
+  };
+
+  // ✅ Verify OTP (GET request with email & OTP as query params)
+  const handleVerifyOtp = async () => {
+    if (!otp.trim()) {
+      setErrors({ otp: "OTP is required." });
+      return;
+    }
+
+    setLoading(true);
+    dispatch(notificationActions.setNotification({ message: "Verifying OTP...", status: "loading" }));
+
+    try {
+      const response = await apiClient.get(`/api/otp/verify?email=${encodeURIComponent(email)}&otp=${otp}`);
+      console.log(response.data);
+      if (response.status === 200) {
+        setOtpVerified(true);
+        dispatch(notificationActions.setNotification({ message: "OTP verified successfully", status: "success" }));
+      }
+    } catch (error) {
+      setErrors({ otp: error.response?.data?.message || "Invalid OTP." });
+      dispatch(notificationActions.setNotification({ message: "OTP verification failed", status: "error" }));
     }
     setLoading(false);
   };
@@ -91,7 +118,7 @@ export default function PasswordReset() {
       dispatch(notificationActions.setNotification({ message: "Password reset successful", status: "success" }));
       navigate("/signin");
     } catch (error) {
-      setErrors({ general: error.response?.data?.message || "Failed to reset password. Please try again." });
+      setErrors({ general: error.response?.data?.message || "Failed to reset password. Try again." });
       dispatch(notificationActions.setNotification({ message: "Password reset failed", status: "error" }));
     }
     setLoading(false);
@@ -107,54 +134,66 @@ export default function PasswordReset() {
               <FaEnvelope className="me-2" /> Email Address
             </label>
             <div className="input-group">
-              <input type="email" className="form-control custom-input" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={emailVerified} />
-              <button
-                type="button"
-                className={`btn ${emailVerified ? "btn-success" : "btn-primary"}`}
-                onClick={handleVerifyEmail}
-                disabled={emailVerified || loading}
-              >
-                {emailVerified ? <FaCheckCircle /> : "Verify"}
+              <input type="email" className="form-control custom-input" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={otpSent} />
+              <button type="button" className={`btn ${otpSent ? "btn-success" : "btn-primary"}`} onClick={handleSendOtp} disabled={otpSent || loading}>
+                {otpSent ? <FaCheckCircle /> : "Send OTP"}
               </button>
-
             </div>
             {errors.email && <p className="text-danger fs-6">{errors.email}</p>}
           </div>
-          {emailVerified && (
+
+          {otpSent && !otpVerified && (
+            <div className="mb-3">
+              <label className="text-dark fs-5 d-flex align-items-center">
+                <FaKey className="me-2" /> Enter OTP
+              </label>
+              <div className="input-group">
+                <input type="text" className="form-control" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} />
+                <button type="button" className="btn btn-primary" onClick={handleVerifyOtp} disabled={loading}>Verify OTP</button>
+              </div>
+              {errors.otp && <p className="text-danger fs-6">{errors.otp}</p>}
+            </div>
+          )}
+
+          {otpVerified && (
             <>
-              <div className="mb-3">
-                <label className="text-dark fs-5 d-flex align-items-center">
-                  <FaLock className="me-2" /> Password
+              <div className="mb-3 fs-5">
+                <label className="d-flex align-items-center">
+                  <FaLock className="me-2" /> New Password
                 </label>
                 <div className="input-group">
-                  <input type={passwordVisible ? "text" : "password"} className="form-control" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                  <span className="input-group-text" onClick={togglePasswordVisibility} style={{ cursor: "pointer" }}>
+                  <input type={passwordVisible ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)}
+                    placeholder="New Password" />
+                  <span className="input-group-text" onClick={togglePasswordVisibility}>
                     {passwordVisible ? <FaEyeSlash /> : <FaEye />}
                   </span>
+                  {errors.password && <p className="text-danger fs-6">{errors.password}</p>}
                 </div>
-                {errors.password && <p className="text-danger fs-6">{errors.password}</p>}
               </div>
-              <div className="mb-3">
-                <label className="text-dark fs-5 d-flex align-items-center">
+
+              <div className="fs-5">
+                <label className="d-flex align-items-center">
                   <FaLock className="me-2" /> Confirm Password
                 </label>
                 <div className="input-group">
-                  <input type={confirmPasswordVisible ? "text" : "password"} className="form-control" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-                  <span className="input-group-text" onClick={toggleConfirmPasswordVisibility} style={{ cursor: "pointer" }}>
+                  <input type={confirmPasswordVisible ? "text" : "password"} className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm Password" />
+                  <span className="input-group-text" onClick={toggleConfirmPasswordVisibility}>
                     {confirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
                   </span>
                 </div>
                 {errors.confirmPassword && <p className="text-danger fs-6">{errors.confirmPassword}</p>}
               </div>
-              <button type="submit" className="btn btn-success w-40 m-auto text-white fs-5 rounded-3 mt-3" disabled={loading}>{loading ? "Processing..." : "Reset Password"}</button>
+              <button type="submit" className="btn btn-success w-40 m-auto fs-6 rounded-3 mt-3" disabled={loading}>Reset Password</button>
             </>
           )}
         </form>
-        <div className="mt-3 d-flex align-items-center fs-6">
-          <FaArrowLeft className="me-2 cursor-pointer" onClick={toLogin} />
-          <span className="text-primary cursor-pointer" onClick={toLogin}>Back to Login</span>
-        </div>
       </div>
+      <div className="back-login mt-3 d-flex align-items-center text-start fs-6">
+        <FaArrowLeft className="me-2 cursor-pointer" onClick={toLogin} />
+        <span className="text-primary cursor-pointer" onClick={toLogin}>Back to Login</span>
+      </div>
+
     </div>
   );
 }

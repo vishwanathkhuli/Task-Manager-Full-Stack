@@ -185,4 +185,9 @@ input.form-control {
     width: 100%;
     flex-direction: column;
   }
+
+  .back-login {
+    width: 100%;
+    margin-left: 3rem !important;
+  }
 }
