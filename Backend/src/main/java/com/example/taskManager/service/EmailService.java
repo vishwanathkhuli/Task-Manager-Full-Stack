@@ -19,7 +19,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setTo(email);
-            helper.setSubject("Your OTP Code");
+            helper.setSubject("Your OTP code is valid for 5 minutes.");
             helper.setText("Your OTP is: " + otp + ". It will expire in 5 minutes.");
 
             mailSender.send(message);

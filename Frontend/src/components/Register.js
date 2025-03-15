@@ -1,27 +1,28 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../redux/userReducer"; // ✅ Redux action for registration
-import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaCheckCircle, FaKey } from "react-icons/fa";
+import { notificationActions } from "../redux/notificationReducer"; // ✅ Import notification actions
 import apiClient from "../api/api";
 
 export default function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch(); // ✅ Redux dispatch function
-  const apiKey = process.env.REACT_APP_EMAIL_API_KEY;
-  const emailCheckTimeout = useRef(null);
 
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    password: ""
+    password: "",
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errors, setErrors] = useState({});
-  const [emailValid, setEmailValid] = useState(null);
-  const [emailMessage, setEmailMessage] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const toLogin = useCallback(() => navigate("/signin"), [navigate]);
 
@@ -30,56 +31,20 @@ export default function Register() {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     if (name === "email") {
-      setEmailValid(null);
       setErrors((prev) => ({ ...prev, email: undefined }));
-      setEmailMessage("");
 
-      if (emailCheckTimeout.current) clearTimeout(emailCheckTimeout.current);
-      emailCheckTimeout.current = setTimeout(() => {
-        isEmailExist(value);
-      }, 500);
+      // Reset OTP state if email is edited
+      if (otpSent || otpVerified) {
+        setOtpSent(false);
+        setOtpVerified(false);
+        setOtp("");
+      }
     }
   };
 
   const togglePasswordVisibility = useCallback(() => {
     setPasswordVisible((prev) => !prev);
   }, []);
-
-  const isEmailExist = async (email) => {
-    if (!email) return;
-
-    if (!apiKey) {
-      console.error("API key is missing");
-      setErrors((prev) => ({ ...prev, email: "Internal error: API key missing!" }));
-      setEmailMessage("Internal error: API key missing!");
-      return;
-    }
-
-    try {
-      const response = await apiClient.get(
-        `https://emailvalidation.abstractapi.com/v1/?api_key=${apiKey}&email=${email}`
-      );
-
-      console.log(response.data);
-
-      const { deliverability, is_smtp_valid, quality_score } = response.data;
-
-      if (deliverability === "DELIVERABLE" && is_smtp_valid.value && quality_score >= 0.5) {
-        setEmailValid(true);
-        setEmailMessage("Email is valid and deliverable.");
-        setErrors((prev) => ({ ...prev, email: undefined })); // Clear previous errors
-      } else {
-        setEmailValid(false);
-        setEmailMessage("Email is invalid or undeliverable.");
-        setErrors((prev) => ({ ...prev, email: "Email is invalid or undeliverable." }));
-      }
-    } catch (error) {
-      console.error("Email validation error:", error);
-      setErrors((prev) => ({ ...prev, email: "Failed to verify email!" }));
-      setEmailMessage("Failed to verify email!");
-    }
-  };
-
 
   const validateForm = useCallback(() => {
     const { firstName, lastName, email, password } = formData;
@@ -108,20 +73,68 @@ export default function Register() {
     return Object.keys(newErrors).length === 0;
   }, [formData]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSendOtp = async () => {
     if (!validateForm()) return;
-    if (!emailValid) {
-      setErrors((prev) => ({ ...prev, email: "Email verification failed!" }));
+    setLoading(true);
+    dispatch(notificationActions.setNotification({ message: "Sending OTP...", status: "loading" }));
+
+    try {
+      const response = await apiClient.get(`/api/otp/send?email=${encodeURIComponent(formData.email)}`);
+      if (response.status === 200) {
+        setOtpSent(true);
+        setErrors({});
+        dispatch(notificationActions.setNotification({ message: "OTP sent successfully!", status: "success" }));
+      }
+    } catch (error) {
+      setErrors({ email: error.response?.data?.message || "Failed to send OTP. Try again." });
+      dispatch(notificationActions.setNotification({ message: "Failed to send OTP.", status: "error" }));
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp.trim()) {
+      setErrors({ otp: "OTP is required." });
       return;
     }
 
+    setLoading(true);
+    dispatch(notificationActions.setNotification({ message: "Verifying OTP...", status: "loading" }));
+
+    try {
+      const response = await apiClient.get(`/api/otp/verify?email=${encodeURIComponent(formData.email)}&otp=${otp}`);
+      if (response.status === 200) {
+        setOtpVerified(true);
+        setErrors({});
+        dispatch(notificationActions.setNotification({ message: "OTP verified successfully!", status: "success" }));
+      }
+    } catch (error) {
+      setErrors({ otp: error.response?.data?.message || "Invalid OTP." });
+      dispatch(notificationActions.setNotification({ message: "OTP verification failed.", status: "error" }));
+    }
+    setLoading(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    if (!otpVerified) {
+      setErrors({ general: "OTP verification is required!" });
+      return;
+    }
+
+    setLoading(true);
+    dispatch(notificationActions.setNotification({ message: "Registering user...", status: "loading" }));
+
     try {
       await dispatch(registerUser(formData)).unwrap(); // ✅ Dispatch Redux action to register user
+      dispatch(notificationActions.setNotification({ message: "Registration successful!", status: "success" }));
       navigate("/signin");
     } catch (error) {
-      setErrors({ general: "Registration failed. Please try again." });
+      setErrors({ general: error.response?.data || "Registration failed. Please try again." });
+      dispatch(notificationActions.setNotification({ message: error.response?.data || "Registration failed.", status: "error" }));
     }
+    setLoading(false);
   };
 
   return (
@@ -177,20 +190,26 @@ export default function Register() {
               <label htmlFor="email" className="text-dark fs-5 d-flex align-items-center">
                 <FaEnvelope className="me-2" /> Email Address
               </label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                className="form-control"
-                placeholder="Enter email"
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-              {emailMessage && (
-                <p className={emailValid ? "text-success fs-6" : "text-danger fs-6"}>
-                  {emailMessage}
-                </p>
-              )}
+              <div className="input-group">
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  className="form-control"
+                  placeholder="Enter email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
+                <button
+                  type="button"
+                  className={`btn ${otpSent ? "btn-success" : "btn-primary"}`}
+                  onClick={handleSendOtp}
+                  disabled={loading}
+                >
+                  {otpSent ? <FaCheckCircle /> : "Send OTP"}
+                </button>
+              </div>
+              {errors.email && <p className="text-danger fs-6">{errors.email}</p>}
             </div>
             <div className="col-12 col-md-6">
               <label htmlFor="password" className="text-dark fs-5 d-flex align-items-center">
@@ -214,7 +233,34 @@ export default function Register() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-success w-40 m-auto fs-6 rounded-3 mt-3">
+          {/* OTP Section */}
+          {otpSent && !otpVerified && (
+            <div className="mb-3">
+              <label className="text-dark fs-5 d-flex align-items-center">
+                <FaKey className="me-2" /> Enter OTP
+              </label>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleVerifyOtp}
+                  disabled={loading}
+                >
+                  Verify OTP
+                </button>
+              </div>
+              {errors.otp && <p className="text-danger fs-6">{errors.otp}</p>}
+            </div>
+          )}
+
+          <button type="submit" className="btn btn-success w-40 m-auto fs-6 rounded-3 mt-3" disabled={!otpVerified || loading}>
             Register
           </button>
         </form>

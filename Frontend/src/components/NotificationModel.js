@@ -41,13 +41,13 @@ export default function NotificationModel() {
     >
       <div
         className={`p-3 mb-2 border rounded shadow-lg text-black ${status === "loading"
-            ? "bg-light"
-            : status === "error"
-              ? "bg-danger text-white"
-              : "bg-success text-white"
+          ? "bg-light"
+          : status === "error"
+            ? "bg-danger text-white"
+            : "bg-success text-white"
           } w-100 d-flex justify-content-between align-items-center`}
       >
-        <p className="mb-0 fs-5 d-flex align-items-center">
+        <p className="mb-0 fs-6 d-flex align-items-center">
           {status === "loading" && (
             <span className="spinner-border spinner-border-sm me-2" role="status"></span>
           )}
