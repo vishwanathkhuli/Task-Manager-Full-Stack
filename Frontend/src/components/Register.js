@@ -48,25 +48,38 @@ export default function Register() {
   const isEmailExist = async (email) => {
     if (!email) return;
 
+    if (!apiKey) {
+      console.error("API key is missing");
+      setErrors((prev) => ({ ...prev, email: "Internal error: API key missing!" }));
+      setEmailMessage("Internal error: API key missing!");
+      return;
+    }
+
     try {
       const response = await apiClient.get(
-        `https://apilayer.net/api/check?access_key=${apiKey}&email=${email}&smtp=1&format=1`
+        `https://emailvalidation.abstractapi.com/v1/?api_key=${apiKey}&email=${email}`
       );
 
-      if (!response.data.smtp_check) {
-        setErrors((prev) => ({ ...prev, email: " Email does not exist!" }));
-        setEmailValid(false);
-        setEmailMessage("Email does not exist!");
-      } else {
+      console.log(response.data);
+
+      const { deliverability, is_smtp_valid, quality_score } = response.data;
+
+      if (deliverability === "DELIVERABLE" && is_smtp_valid.value && quality_score >= 0.5) {
         setEmailValid(true);
-        setEmailMessage("Valid email");
+        setEmailMessage("Email is valid and deliverable.");
+        setErrors((prev) => ({ ...prev, email: undefined })); // Clear previous errors
+      } else {
+        setEmailValid(false);
+        setEmailMessage("Email is invalid or undeliverable.");
+        setErrors((prev) => ({ ...prev, email: "Email is invalid or undeliverable." }));
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.error("Email validation error:", error);
       setErrors((prev) => ({ ...prev, email: "Failed to verify email!" }));
       setEmailMessage("Failed to verify email!");
     }
   };
+
 
   const validateForm = useCallback(() => {
     const { firstName, lastName, email, password } = formData;
