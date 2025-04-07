@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../redux/userReducer";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,17 +15,17 @@ export default function Login() {
   const [errors, setErrors] = useState({});
 
   const handleChange = useCallback((e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }, []);
 
   const toggleVisibility = useCallback((field) => {
-    field === "password"
-      ? setPasswordVisible((prev) => !prev)
-      : setEmailVisible((prev) => !prev);
+    if (field === "password") {
+      setPasswordVisible((prev) => !prev);
+    } else {
+      setEmailVisible((prev) => !prev);
+    }
   }, []);
-
-  const toRegister = useCallback(() => navigate("/signup"), [navigate]);
-  const toForgotPassword = useCallback(() => navigate("/reset-password"), [navigate]);
 
   const validateForm = useCallback(() => {
     const { email, password } = formData;
@@ -38,12 +39,10 @@ export default function Login() {
 
     if (password.length < 8) {
       newErrors.password = "Password must be at least 8 characters long.";
-    } else if (!/[A-Z]/.test(password)) {
-      newErrors.password = "Must contain at least one uppercase letter.";
-    } else if (!/[a-z]/.test(password)) {
-      newErrors.password = "Must contain at least one lowercase letter.";
-    } else if (!/[!@#$%^&*]/.test(password)) {
-      newErrors.password = "Must contain at least one special character (!@#$%^&*).";
+    } else {
+      if (!/[A-Z]/.test(password)) newErrors.password = "Must contain at least one uppercase letter.";
+      else if (!/[a-z]/.test(password)) newErrors.password = "Must contain at least one lowercase letter.";
+      else if (!/[!@#$%^&*]/.test(password)) newErrors.password = "Must contain at least one special character (!@#$%^&*).";
     }
 
     setErrors(newErrors);
@@ -62,16 +61,39 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = (e) => {
+    e.preventDefault();
+    const redirectURL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8080";
+    window.location.href = `${redirectURL}/oauth2/authorization/google`;
+  };
+
   return (
     <div className="container d-flex flex-column align-items-center justify-content-center fonts">
       <div className="card p-4 border-0" style={{ maxWidth: "400px", width: "100%" }}>
-        <h3 className="text-center mb-3 special-font">Log in to your account</h3>
+        <h3 className="text-center mb-2 special-font">Log in to your account</h3>
 
-        <div className="mb-4 d-flex justify-content-center align-items-center">
-          <span className="text-dark fs-6">Don't have an account? </span>
-          <span className="text-primary fs-6 cursor-pointer ms-2" onClick={toRegister}>
+        <div className="mb-2 d-flex justify-content-center align-items-center">
+          <span className="text-dark fs-6">Don't have an account?</span>
+          <span className="text-primary fs-6 cursor-pointer ms-2" onClick={() => navigate("/signup")}>
             Sign Up
           </span>
+        </div>
+
+        <div className="m-auto">
+          <button
+            type="button"
+            className="btn btn-light m-1 d-flex align-items-center justify-content-center border"
+            onClick={handleGoogleLogin}
+          >
+            <FcGoogle className="me-2" size={20} />
+            Continue with Google
+          </button>
+        </div>
+
+        <div className="d-flex align-items-center m-2">
+          <div className="flex-grow-1 border-top me-2"></div>
+          <span className="text-muted fs-6">OR</span>
+          <div className="flex-grow-1 border-top ms-2"></div>
         </div>
 
         <form onSubmit={handleSubmit} className="d-flex flex-column">
@@ -111,7 +133,11 @@ export default function Login() {
                 value={formData.password}
                 onChange={handleChange}
               />
-              <span className="input-group-text" onClick={() => toggleVisibility("password")} style={{ cursor: "pointer" }}>
+              <span
+                className="input-group-text"
+                onClick={() => toggleVisibility("password")}
+                style={{ cursor: "pointer" }}
+              >
                 {passwordVisible ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
@@ -120,7 +146,7 @@ export default function Login() {
 
           {/* Forgot Password */}
           <div className="d-flex align-items-center">
-            <span className="text-primary fs-6 ms-1 cursor-pointer" onClick={toForgotPassword}>
+            <span className="text-primary fs-6 ms-1 cursor-pointer" onClick={() => navigate("/reset-password")}>
               Forgot Password?
             </span>
           </div>
@@ -129,6 +155,9 @@ export default function Login() {
           <button type="submit" className="btn btn-success w-40 m-auto text-white fs-6 rounded-3 mt-3">
             Login
           </button>
+
+          {/* General Error */}
+          {errors.general && <p className="text-danger text-center mt-2">{errors.general}</p>}
         </form>
       </div>
     </div>

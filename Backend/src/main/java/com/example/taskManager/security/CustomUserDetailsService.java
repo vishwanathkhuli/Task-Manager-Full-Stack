@@ -20,12 +20,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // Find user by email in MongoDB
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found.."));
-        
+        String password = user.getPassword() != null ? user.getPassword() : "DUMMY_OAUTH_PASSWORD";
         // Convert User entity to Spring Security's UserDetails
         return org.springframework.security.core.userdetails.User
                 .builder()
                 .username(user.getEmail())
-                .password(user.getPassword())
+                .password(password)
                 .build();
     }
 }

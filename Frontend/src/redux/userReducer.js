@@ -54,6 +54,9 @@ const userSlice = createSlice({
   name: 'user',
   initialState: INITIAL_STATE,
   reducers: {
+    setUser: (state, action) => {
+      state.user = action.payload;
+    },
     logoutUser: (state, action) => {
       state.loading = false;
       state.user = null;

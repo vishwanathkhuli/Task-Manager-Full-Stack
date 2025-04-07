@@ -17,6 +17,8 @@ const UpdateTask = lazy(() => import('./components/UpdateTask'));
 const Profile = lazy(() => import('./components/Profile'));
 const TaskDetails = lazy(() => import('./components/TaskDetails'));
 const PageNotFound = lazy(() => import('./components/PageNotFound'));
+const OAuth2Redirect = lazy(() => import('./pages/OAuth2Redirect'));
+
 
 function App() {
   const { user } = useSelector(selectUser);
@@ -33,6 +35,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/dashboard" element={user ? <Dashboard /> : <Register />} />
+          <Route path="/oauth2-redirect" element={<OAuth2Redirect />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/signin" element={<Login />} />
           <Route path="/task" element={user ? <Task /> : <Homepage />} />

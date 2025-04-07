@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.taskManager.dto.AuthResponse;
 import com.example.taskManager.dto.UpdateUserRequest;
@@ -20,76 +19,81 @@ import com.example.taskManager.repository.UserRepository;
 
 @Service
 public class UserService {
-	
+
 	UserRepository userRepository;
-	
+
 	JwtAuthenticationHelper jwtTokenProvider;
-	
+
 	@Autowired
-	public UserService(UserRepository userRepository,  JwtAuthenticationHelper jwtTokenProvider) {
+	public UserService(UserRepository userRepository, JwtAuthenticationHelper jwtTokenProvider) {
 		this.userRepository = userRepository;
 		this.jwtTokenProvider = jwtTokenProvider;
 	}
-	
-	// Service for the sign up method
-	public void signUp(UserRegisterRequest userRegisterRequest) {
-	    // Check if the user already exists based on email
-	    Optional<User> existingUser = userRepository.findByEmail(userRegisterRequest.getEmail());
-	    
-	    // if the user is already exist then return new exception
-	    if (existingUser.isPresent()) {
-	        throw new UserAlreadyExistsException("User with email " + userRegisterRequest.getEmail() + " already exists.");
-	    }
-	    
-	    // Encrypt the string password
-	    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	    String encoderPassword = passwordEncoder.encode(userRegisterRequest.getPassword());
-	    
-	    // Create a new user object and populate fields
-	    User newUser = new User();
-	    newUser.setFirstName(userRegisterRequest.getFirstName());
-	    newUser.setLastName(userRegisterRequest.getLastName());
-	    newUser.setEmail(userRegisterRequest.getEmail());
-	    newUser.setPassword(encoderPassword); // Ensure password is encrypted
 
-	    // Save the new user in the database
-	    userRepository.save(newUser);
+	public String getUserIdFromToken(String header) {
+		String token = header.substring(7);
+		return jwtTokenProvider.getUserIdFromToken(token);
 	}
 
+	// Service for the sign up method
+	public void signUp(UserRegisterRequest userRegisterRequest) {
+		// Check if the user already exists based on email
+		Optional<User> existingUser = userRepository.findByEmail(userRegisterRequest.getEmail());
+
+		// if the user is already exist then return new exception
+		if (existingUser.isPresent()) {
+			throw new UserAlreadyExistsException(
+					"User with email " + userRegisterRequest.getEmail() + " already exists.");
+		}
+
+		// Encrypt the string password
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String encoderPassword = passwordEncoder.encode(userRegisterRequest.getPassword());
+
+		// Create a new user object and populate fields
+		User newUser = new User();
+		newUser.setFirstName(userRegisterRequest.getFirstName());
+		newUser.setLastName(userRegisterRequest.getLastName());
+		newUser.setEmail(userRegisterRequest.getEmail());
+		newUser.setPassword(encoderPassword); // Ensure password is encrypted
+
+		// Save the new user in the database
+		userRepository.save(newUser);
+	}
 
 	// Service for the sign in method
 	public AuthResponse signIn(UserSigninRequest userSigninRequest) {
-	    // Fetch user by email
-	    User user = userRepository.findByEmail(userSigninRequest.getEmail())
-	            .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userSigninRequest.getEmail()));
-	    
-	    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	    // Verify password
-	    if (!passwordEncoder.matches(userSigninRequest.getPassword(), user.getPassword())) {
-	        throw new UserNotFoundException("Invalid credentials. Please try again.");
-	    }
+		// Fetch user by email
+		User user = userRepository.findByEmail(userSigninRequest.getEmail()).orElseThrow(
+				() -> new UsernameNotFoundException("User not found with email: " + userSigninRequest.getEmail()));
 
-	    // Generate JWT token
-	    String token = jwtTokenProvider.generateToken(user.getEmail(), user.getId());
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		// Verify password
+		if (!passwordEncoder.matches(userSigninRequest.getPassword(), user.getPassword())) {
+			throw new UserNotFoundException("Invalid credentials. Please try again.");
+		}
 
-	    // Map User entity to UserDetailsDTO
-	    UserDetailsDTO userDetails = new UserDetailsDTO();
-	    userDetails.setId(user.getId());
-	    userDetails.setFirstName(user.getFirstName());
-	    userDetails.setLastName(user.getLastName());
-	    userDetails.setEmail(user.getEmail());
+		// Generate JWT token
+		String token = jwtTokenProvider.generateToken(user.getEmail(), user.getId());
 
-	    // Prepare AuthResponse
-	    AuthResponse authResponse = new AuthResponse();
-	    authResponse.setToken(token);
-	    authResponse.setUserDetails(userDetails);
+		// Map User entity to UserDetailsDTO
+		UserDetailsDTO userDetails = new UserDetailsDTO();
+		userDetails.setId(user.getId());
+		userDetails.setFirstName(user.getFirstName());
+		userDetails.setLastName(user.getLastName());
+		userDetails.setEmail(user.getEmail());
 
-	    return authResponse;
+		// Prepare AuthResponse
+		AuthResponse authResponse = new AuthResponse();
+		authResponse.setToken(token);
+		authResponse.setUserDetails(userDetails);
+
+		return authResponse;
 	}
 
 	public UserDetailsDTO updateUser(UpdateUserRequest updateUser) {
-		User user = userRepository.findByEmail(updateUser.getEmail())
-	            .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + updateUser.getEmail()));
+		User user = userRepository.findByEmail(updateUser.getEmail()).orElseThrow(
+				() -> new UsernameNotFoundException("User not found with email: " + updateUser.getEmail()));
 		user.setFirstName(updateUser.getFirstName());
 		user.setLastName(updateUser.getLastName());
 		userRepository.save(user);
@@ -102,28 +106,46 @@ public class UserService {
 	}
 
 	public ResponseEntity<?> verifyEmail(String email) {
-	    // Check if the user exists by email
-	    Optional<User> existingUser = userRepository.findByEmail(email);
+		// Check if the user exists by email
+		Optional<User> existingUser = userRepository.findByEmail(email);
 
-	    if (existingUser.isPresent()) {
-	        return ResponseEntity.ok("Email is verified.");
-	    } else {
-	        throw new UserNotFoundException("User with email " + email + " not found.");
-	    }
+		if (existingUser.isPresent()) {
+			return ResponseEntity.ok("Email is verified.");
+		} else {
+			throw new UserNotFoundException("User with email " + email + " not found.");
+		}
 	}
-	
+
 	public String resetPassword(String email, String newPassword) {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+		Optional<User> optionalUser = userRepository.findByEmail(email);
 
-        if (!optionalUser.isPresent()) {
-            throw new UserNotFoundException("User with email " + email + " not found.");
-        }
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        User user = optionalUser.get();
-        user.setPassword(passwordEncoder.encode(newPassword)); // Encrypt the new password
-        userRepository.save(user);
+		if (!optionalUser.isPresent()) {
+			throw new UserNotFoundException("User with email " + email + " not found.");
+		}
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		User user = optionalUser.get();
+		user.setPassword(passwordEncoder.encode(newPassword)); // Encrypt the new password
+		userRepository.save(user);
 
-        return "Password reset successfully.";
-    }
+		return "Password reset successfully.";
+	}
+
+	public UserDetailsDTO getUser(String header) {
+		// Extract userId from the token
+		String userId = getUserIdFromToken(header);
+
+		// Find the user by ID
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
+
+		// Map user entity to DTO
+		UserDetailsDTO userDetails = new UserDetailsDTO();
+		userDetails.setId(user.getId());
+		userDetails.setFirstName(user.getFirstName());
+		userDetails.setLastName(user.getLastName());
+		userDetails.setEmail(user.getEmail());
+
+		return userDetails;
+	}
 
 }
