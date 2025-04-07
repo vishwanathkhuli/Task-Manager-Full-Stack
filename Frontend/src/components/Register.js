@@ -123,7 +123,7 @@ export default function Register() {
 
   const handleGoogleLogin = (e) => {
     e.preventDefault();
-    const redirectURL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8080";
+    const redirectURL = process.env.REACT_APP_BACKEND_URL;
     window.location.href = `${redirectURL}/oauth2/authorization/google`;
   };
 

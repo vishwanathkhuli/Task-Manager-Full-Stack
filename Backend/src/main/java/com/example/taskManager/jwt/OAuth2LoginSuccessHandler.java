@@ -36,10 +36,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             User user = optionalUser.get();
             String token = jwtService.generateToken(user.getEmail(), user.getId().toString());
 
-            // Redirect with token
-            response.sendRedirect("http://localhost:3000/oauth2-redirect?token=" + token);
+            // ✅ Redirect to frontend (deployed version) with token
+            response.sendRedirect("https://task-manager-snowy-nine.vercel.app/oauth2-redirect?token=" + token);
         } else {
-            response.sendRedirect("http://localhost:3000/signin?error=user_not_found");
+            // ❌ Error redirect for frontend (deployed version)
+            response.sendRedirect("https://task-manager-snowy-nine.vercel.app/signin?error=user_not_found");
         }
     }
 }
