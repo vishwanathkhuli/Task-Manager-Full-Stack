@@ -54,7 +54,8 @@ function UpdatePasswordSection({ user }) {
             <FaLock className="me-2" /> New Password
           </label>
           <div className="input-group">
-            <input type={showPassword ? "text" : "password"} className="form-control custom-input" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+            <input type={showPassword ? "text" : "password"} className="form-control custom-input"
+              placeholder="Enter New Passoword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
             <span className="input-group-text" onClick={() => setShowPassword(!showPassword)} style={{ cursor: 'pointer' }}>
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
@@ -65,7 +66,7 @@ function UpdatePasswordSection({ user }) {
             <FaLock className="me-2" /> Confirm Password
           </label>
           <div className="input-group">
-            <input type={showConfirmPassword ? "text" : "password"} className="form-control custom-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+            <input type={showConfirmPassword ? "text" : "password"} className="form-control custom-input" placeholder="Confirm Passoword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
             <span className="input-group-text" onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ cursor: 'pointer' }}>
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
